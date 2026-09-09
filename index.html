@@ -109,10 +109,7 @@ a{color:var(--accent)}
 <section id="s3" role="tabpanel" aria-labelledby="t3" hidden>
   <h2>Прогон</h2>
   <p>Каждое задание проходит один и тот же путь: две модели отвечают независимо, не видя ответов друг друга; затем каждая обязана найти ошибки в ответе другой; при расхождении идёт уточняющий раунд; итог сводит арбитр, причём роль арбитра чередуется по заданиям, чтобы результат не зависел от того, кто судит.</p>
-  <div class="row"><label for="mode">Объём прогона</label><select id="mode">
-    <option value="25">Короткий — 25 заданий, около 5 минут</option>
-    <option value="150">Полный — 150 заданий, около 25 минут</option>
-  </select></div>
+  <div class="row"><label>Объём прогона</label><div class="stat">Полный: все 150 заданий, около 25 минут. Короткого варианта нет: выборка меньше не даёт результата, о котором стоит говорить.</div></div>
   <div class="btns">
     <button class="act" id="btnRun">Запустить испытания</button>
     <button class="sec" id="btnStop" disabled>Остановить</button>
@@ -155,7 +152,7 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
 
 /* ---- настройки агентов: только в памяти вкладки ---- */
 const AG = {
-  m1:{name:"Агент 1 (М1)", proto:"B", url:"https://api.deepseek.com/chat/completions", model:"", key:""},
+  m1:{name:"Агент 1 (М1)", proto:"B", url:"", model:"", key:""},
   m2:{name:"Агент 2 (М2)", proto:"B", url:"", model:"", key:""},
   m3:{name:"Резерв (М3)", proto:"B", url:"", model:"", key:"", same:true}
 };
@@ -182,8 +179,8 @@ function drawAgents(){
     sel.append(el("option",{value:"A"},"Протокол A — messages (x-api-key)"));
     sel.value=a.proto; sel.addEventListener("change",()=>{a.proto=sel.value;});
     box.append(el("div",{class:"row"},el("label",{},"Тип интерфейса"),sel));
-    box.append(mk("Адрес интерфейса","url","https://api.поставщик/chat/completions"));
-    box.append(mk("Идентификатор модели","model","например deepseek-chat"));
+    box.append(mk("Адрес интерфейса","url","полный адрес из документации поставщика"));
+    box.append(mk("Идентификатор модели","model","идентификатор из документации поставщика"));
     box.append(mk("Ключ доступа","key","вставьте ключ","password"));
     host.append(box);
   }
@@ -352,7 +349,7 @@ $("#btnRun").addEventListener("click",async()=>{
     return;
   }
   $("#runStat").className="stat";
-  const n=parseInt($("#mode").value,10);
+  const n=REG.length;
   const tasks=[]; const byDom={};
   for(const r of REG){ (byDom[r.d]=byDom[r.d]||[]).push(r); }
   if(n>=REG.length){ tasks.push(...REG); }
